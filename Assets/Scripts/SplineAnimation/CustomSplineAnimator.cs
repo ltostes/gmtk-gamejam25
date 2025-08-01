@@ -5,7 +5,7 @@ public class CustomSplineAnimator : MonoBehaviour
 {
 
     [Header("Spline Settings")]
-    [SerializeField] private SplineContainer splineContainer;
+    [SerializeField] public SplineContainer splineContainer;
     public WrapMode wrapMode = WrapMode.Loop;
     public bool alignToSpline = true;
 
