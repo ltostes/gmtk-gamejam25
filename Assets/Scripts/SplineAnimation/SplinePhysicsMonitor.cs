@@ -95,7 +95,7 @@ public class SplinePhysicsMonitor : MonoBehaviour
             GUI.color = CentripetalAcceleration > centripetalAccelThreshold 
                 ? Color.red : Color.yellow;
             Handles.Label(transform.position + Vector3.up * 0.5f, 
-                $"Centripetal Accel: {CentripetalAcceleration:F1} m/s²");
+                $"Centripetal Accel: {CentripetalAcceleration:F1} m/s²\nVelocity: {Velocity.magnitude:F1}m/s");
         }
     }
 }
