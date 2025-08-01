@@ -97,16 +97,21 @@ public class CustomSplineAnimator : MonoBehaviour
     }
     void ApplyPhysics()
     {
-        // Apply friction
-        currentSpeed = Mathf.Max(0, currentSpeed - friction * Time.deltaTime);
+        // Calculate acceleration forces
+        Vector3 tangent = GetTangentAtPosition();
 
-        // Apply gravity influence
-        if (gravityForce != Vector3.zero)
-        {
-            Vector3 tangent = splineContainer.EvaluateTangent(normalizedPosition);
-            Vector3 gravityProjection = Vector3.Project(gravityForce, tangent.normalized);
-            currentSpeed += Vector3.Dot(gravityProjection, tangent) * Time.deltaTime;
-        }
+        // Gravity projection
+        Vector3 gravityProjection = Vector3.Project(Physics.gravity, tangent);
+        float gravityAcceleration = Vector3.Dot(gravityProjection, tangent) * gravityInfluence;
+
+        // Curvature forces (from physics monitor)
+        SplinePhysicsMonitor monitor = GetComponent<SplinePhysicsMonitor>();
+        float centripetalEffect = monitor != null ? monitor.CentripetalAcceleration * 0.1f : 0f;
+
+        // Combined acceleration
+        float totalAcceleration = gravityAcceleration - friction; // - centripetalEffect;
+
+        currentSpeed = Mathf.Max(0, currentSpeed + totalAcceleration * Time.deltaTime);
     }
 
     // Public methods for controlling motion
