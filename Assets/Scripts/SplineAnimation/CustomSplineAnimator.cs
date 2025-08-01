@@ -147,6 +147,13 @@ public class CustomSplineAnimator : MonoBehaviour
         return normalizedPosition;
     }
 
+    public Vector3 GetTangentAtPosition()
+    {
+        if (splineContainer == null) return Vector3.forward;
+        Vector3 ret_tangent = splineContainer.EvaluateTangent(normalizedPosition);
+        return ret_tangent.normalized;
+    }
+
 }
 
 public enum WrapMode

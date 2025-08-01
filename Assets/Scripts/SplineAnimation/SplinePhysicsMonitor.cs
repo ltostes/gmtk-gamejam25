@@ -36,7 +36,7 @@ public class SplinePhysicsMonitor : MonoBehaviour
         
         // Calculate velocity using both animator speed and spline direction
         float t = animator.normalizedPosition;
-        Vector3 tangent = splineContainer.EvaluateTangent(t);
+        Vector3 tangent = animator.GetTangentAtPosition();
         Velocity = tangent.normalized * animator.currentSpeed;
 
         // Calculate curvature
