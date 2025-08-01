@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.Splines;
+using UnityEngine.InputSystem;
 
 public class CustomSplineAnimator : MonoBehaviour
 {
@@ -25,11 +26,79 @@ public class CustomSplineAnimator : MonoBehaviour
     private Vector3 gravityForce = Vector3.zero;
 
 
+    [Header("Input Controls")]
+    public float accelerationForce = 5f;
+    public float brakingForce = 10f;
+    public float maxAcceleration = 2f; // Multiplier for max speed during acceleration
+
+    // Physics forces storage
+    public float _currentAcceleration;
+    public float _currentBraking;
+
+    [Header("Input System")]
+    public InputActionAsset inputActions;
+    private InputAction accelerateAction;
+    private InputAction brakeAction;
+
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         CalculateSplineLength();
         UpdatePositionOnSpline();
+        SetupInputActions();
+    }
+
+    void SetupInputActions()
+    {
+        if (inputActions == null)
+        {
+            Debug.LogError("Input Actions asset is not assigned!");
+            return;
+        }
+        
+        // Find the actions
+        var vehicleMap = inputActions.FindActionMap("Vehicle");
+        if (vehicleMap != null)
+        {
+            accelerateAction = vehicleMap.FindAction("Accelerate");
+            brakeAction = vehicleMap.FindAction("Brake");
+            
+            if (accelerateAction != null) accelerateAction.Enable();
+            if (brakeAction != null) brakeAction.Enable();
+        }
+    }
+
+    void OnDestroy()
+    {
+        if (accelerateAction != null) accelerateAction.Disable();
+        if (brakeAction != null) brakeAction.Disable();
+    }
+
+    void Update()
+    {
+        HandleInput();
+    }
+
+    void HandleInput()
+    {
+        // Reset forces each frame
+        _currentAcceleration = 0f;
+        _currentBraking = 0f;
+
+        // Read input using Input System
+        bool isAccelerating = accelerateAction != null && accelerateAction.ReadValue<float>() > 0.1f;
+        bool isBraking = brakeAction != null && brakeAction.ReadValue<float>() > 0.1f;
+
+        if (isAccelerating)
+        {
+            _currentAcceleration = accelerationForce;
+        }
+
+        if (isBraking)
+        {
+            _currentBraking = brakingForce;
+        }
     }
 
     // Update is called once per frame
@@ -108,10 +177,17 @@ public class CustomSplineAnimator : MonoBehaviour
         SplinePhysicsMonitor monitor = GetComponent<SplinePhysicsMonitor>();
         float centripetalEffect = monitor != null ? monitor.CentripetalAcceleration * 0.1f : 0f;
 
+        // Apply input forces
+        float inputForce = _currentAcceleration - _currentBraking;
+
         // Combined acceleration
-        float totalAcceleration = gravityAcceleration - friction; // - centripetalEffect;
+        float totalAcceleration = gravityAcceleration - friction + inputForce; // - centripetalEffect;
 
         currentSpeed = Mathf.Max(0, currentSpeed + totalAcceleration * Time.deltaTime);
+
+        // Enforce speed limits
+        float effectiveMaxSpeed = _currentAcceleration > 0 ? maxSpeed * maxAcceleration : maxSpeed;
+        currentSpeed = Mathf.Clamp(currentSpeed, 0, effectiveMaxSpeed);
     }
 
     // Public methods for controlling motion
