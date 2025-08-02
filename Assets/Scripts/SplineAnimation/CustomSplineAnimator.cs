@@ -40,6 +40,8 @@ public class CustomSplineAnimator : MonoBehaviour
     private InputAction accelerateAction;
     private InputAction brakeAction;
 
+    [Header("Track Objects")]
+    public TrackObjectManager trackObjectManager;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -113,6 +115,9 @@ public class CustomSplineAnimator : MonoBehaviour
 
         // Apply physics influences
         ApplyPhysics();
+
+        // Track segments such as lifts, brakes etc
+        ApplyTrackObjects();
 
         // Update position along spline
         UpdatePositionOnSpline();
@@ -204,6 +209,36 @@ public class CustomSplineAnimator : MonoBehaviour
         {
             isAccelerating = true;
             accelerationTimer = 0f;
+        }
+    }
+    private void ApplyTrackObjects()
+    {
+        if (trackObjectManager == null) return;
+        
+        TrackSegment activeSegment = trackObjectManager.GetActiveSegment(normalizedPosition);
+        if (activeSegment == null) return;
+        
+        switch (activeSegment.type)
+        {
+            case TrackObjectType.Lift:
+                // Maintain minimum speed for lifts
+                currentSpeed = Mathf.Max(currentSpeed, activeSegment.liftSpeed);
+                break;
+                
+            case TrackObjectType.Brake:
+                // Apply constant braking force
+                currentSpeed -= activeSegment.brakeStrength * Time.deltaTime;
+                currentSpeed = Mathf.Max(activeSegment.brakeMinSpeed, currentSpeed);
+                break;
+                
+            case TrackObjectType.Booster:
+                // Apply instant speed boost
+                currentSpeed += activeSegment.boosterForce * Time.deltaTime;
+                break;
+                
+            case TrackObjectType.Checkpoint:
+                // You could implement checkpoint logic here
+                break;
         }
     }
 
