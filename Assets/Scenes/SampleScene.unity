@@ -981,7 +981,7 @@ MonoBehaviour:
   gravityInfluence: 1
   friction: 10
   accelerationForce: 20
-  brakingForce: 10
+  brakingForce: 0
   maxAcceleration: 2
   _currentAcceleration: 0
   _currentBraking: 0
@@ -1074,7 +1074,7 @@ GameObject:
   - component: {fileID: 1660559794}
   - component: {fileID: 1660559793}
   m_Layer: 0
-  m_Name: PassengerSpawner
+  m_Name: SimulationManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
