@@ -11,9 +11,11 @@ public class CustomSplineAnimator : MonoBehaviour
     public bool alignToSpline = true;
 
     [Header("Motion Settings")]
+    public float initialPosition = 0.035f;
+    public float initialSpeed = 0f;
     public float maxSpeed = 5f;
     [Range(0f, 1f)] public float normalizedPosition = 0f;
-    public float currentSpeed = 0f;
+    public float currentSpeed = 0.01f;
     public AnimationCurve accelerationCurve = AnimationCurve.Linear(0, 0, 1, 1);
 
     [Header("Physics Settings")]
@@ -47,7 +49,7 @@ public class CustomSplineAnimator : MonoBehaviour
     void Start()
     {
         CalculateSplineLength();
-        UpdatePositionOnSpline();
+        UpdatePositionOnSpline(true); // isStart = true
         SetupInputActions();
     }
 
@@ -58,14 +60,14 @@ public class CustomSplineAnimator : MonoBehaviour
             Debug.LogError("Input Actions asset is not assigned!");
             return;
         }
-        
+
         // Find the actions
         var vehicleMap = inputActions.FindActionMap("Vehicle");
         if (vehicleMap != null)
         {
             accelerateAction = vehicleMap.FindAction("Accelerate");
             brakeAction = vehicleMap.FindAction("Brake");
-            
+
             if (accelerateAction != null) accelerateAction.Enable();
             if (brakeAction != null) brakeAction.Enable();
         }
@@ -137,13 +139,16 @@ public class CustomSplineAnimator : MonoBehaviour
             prevPos = currentPos;
         }
     }
-    void UpdatePositionOnSpline()
+    void UpdatePositionOnSpline(bool isStart = false)
     {
-        if (splineContainer == null || splineContainer.Spline == null) return;
+        if (splineContainer == null
+            || splineContainer.Spline == null
+            || (currentSpeed == 0 && !isStart)
+        ) return;
 
         // Convert speed to normalized progress
         float progressDelta = (currentSpeed * Time.deltaTime) / splineLength;
-        normalizedPosition = WrapNormalizedPosition(normalizedPosition + progressDelta);
+        normalizedPosition = Mathf.Repeat(normalizedPosition + progressDelta, 1f); // Repeat is for it to loop after finish
 
         // Get and apply position
         Vector3 newPosition = splineContainer.EvaluatePosition(normalizedPosition);
@@ -157,18 +162,7 @@ public class CustomSplineAnimator : MonoBehaviour
             transform.rotation = Quaternion.LookRotation(tangent, up);
         }
     }
-    float WrapNormalizedPosition(float position)
-    {
-        switch (wrapMode)
-        {
-            case WrapMode.Loop:
-                return Mathf.Repeat(position, 1f);
-            case WrapMode.PingPong:
-                return Mathf.PingPong(position, 1f);
-            default: // Once
-                return Mathf.Clamp01(position);
-        }
-    }
+
     void ApplyPhysics()
     {
         // Calculate acceleration forces
@@ -214,53 +208,32 @@ public class CustomSplineAnimator : MonoBehaviour
     private void ApplyTrackObjects()
     {
         if (trackObjectManager == null) return;
-        
+
         TrackSegment activeSegment = trackObjectManager.GetActiveSegment(normalizedPosition);
         if (activeSegment == null) return;
-        
+
         switch (activeSegment.type)
         {
             case TrackObjectType.Lift:
                 // Maintain minimum speed for lifts
                 currentSpeed = Mathf.Max(currentSpeed, activeSegment.liftSpeed);
                 break;
-                
+
             case TrackObjectType.Brake:
                 // Apply constant braking force
                 currentSpeed -= activeSegment.brakeStrength * Time.deltaTime;
                 currentSpeed = Mathf.Max(activeSegment.brakeMinSpeed, currentSpeed);
                 break;
-                
+
             case TrackObjectType.Booster:
                 // Apply instant speed boost
                 currentSpeed += activeSegment.boosterForce * Time.deltaTime;
                 break;
-                
+
             case TrackObjectType.Checkpoint:
                 // You could implement checkpoint logic here
                 break;
         }
-    }
-
-    public void ApplyGravityForce(Vector3 gravity)
-    {
-        gravityForce = gravity * gravityInfluence;
-    }
-
-    public void ApplyImpulse(float impulseForce)
-    {
-        currentSpeed += impulseForce;
-    }
-
-    // For debugging and visualization
-    public float GetCurrentVelocity()
-    {
-        return currentSpeed;
-    }
-
-    public float GetNormalizedPosition()
-    {
-        return normalizedPosition;
     }
 
     public Vector3 GetTangentAtPosition()
@@ -268,6 +241,14 @@ public class CustomSplineAnimator : MonoBehaviour
         if (splineContainer == null) return Vector3.forward;
         Vector3 ret_tangent = splineContainer.EvaluateTangent(normalizedPosition);
         return ret_tangent.normalized;
+    }
+
+    [ContextMenu("Reset Position")]
+    public void resetPosition()
+    {
+        normalizedPosition = initialPosition;
+        currentSpeed = initialSpeed;
+        UpdatePositionOnSpline(true);
     }
 
 }

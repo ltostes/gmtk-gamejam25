@@ -7,6 +7,8 @@ public class PassengerSpawner : MonoBehaviour
     public Transform cartAnchor;
     public Vector3[] seatOffsets; // Set in Inspector
 
+    private GameObject cartContainer;
+
     public float seatRandRange = 0.02f;
 
     void Start()
@@ -15,16 +17,15 @@ public class PassengerSpawner : MonoBehaviour
     }
 
     [ContextMenu("Reset Passengers")]
-    void passengerReset()
+    public void passengerReset()
     {
-        GameObject oldCartContainer = GameObject.Find("CartContainer");
-        if (oldCartContainer != null)
+        if (cartContainer != null)
         {
-            Destroy(oldCartContainer);
+            Destroy(cartContainer);
         }
 
         // Cart and passenger container
-        GameObject cartContainer = new GameObject();
+        cartContainer = new GameObject();
 
         cartContainer.name = "CartContainer";
 
