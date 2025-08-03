@@ -164,21 +164,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   splineContainer: {fileID: 917255316}
-  trackSegments:
-  - start: 0.03
-    end: 0.095
-    type: 1
-    liftSpeed: 0
-    brakeStrength: 30
-    brakeMinSpeed: 0.5
-    boosterForce: 0
-  - start: 0.14
-    end: 0.28
-    type: 1
-    liftSpeed: 0
-    brakeStrength: 30
-    brakeMinSpeed: 0.5
-    boosterForce: -50
+  trackSegments: []
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0
@@ -966,7 +952,7 @@ MonoBehaviour:
   wrapMode: 1
   alignToSpline: 1
   maxSpeed: 10
-  normalizedPosition: 0.025
+  normalizedPosition: 0.035
   currentSpeed: 0
   accelerationCurve:
     serializedVersion: 2
@@ -974,17 +960,17 @@ MonoBehaviour:
     - serializedVersion: 3
       time: 0
       value: 0
-      inSlope: 0
-      outSlope: 0
+      inSlope: 2
+      outSlope: 2
       tangentMode: 0
       weightedMode: 0
       inWeight: 0
       outWeight: 0
     - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 2
-      outSlope: 2
+      time: 1.0666656
+      value: 1.026413
+      inSlope: 0
+      outSlope: 0
       tangentMode: 0
       weightedMode: 0
       inWeight: 0
@@ -992,9 +978,9 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  gravityInfluence: 0.1
-  friction: 0.05
-  accelerationForce: 1
+  gravityInfluence: 1
+  friction: 10
+  accelerationForce: 20
   brakingForce: 10
   maxAcceleration: 2
   _currentAcceleration: 0
