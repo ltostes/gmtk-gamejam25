@@ -14,7 +14,13 @@ public class StateController : MonoBehaviour
     public int livePassengers;
 
     private float elapsedTime;
+    private float elapsedLapTime;
     private int elapsedLaps;
+    private float currentScore;
+    private float potentialPassengerLapScore;
+
+    [Header("Game Settings")]
+    public int referenceLapTime = 60;
 
     [Header("GUI Settings")]
     public float guiOffsetY = 20f;
@@ -33,7 +39,9 @@ public class StateController : MonoBehaviour
     {
         isStarted = false;
         elapsedTime = 0f;
+        elapsedLapTime = 0f;
         elapsedLaps = 0;
+        currentScore = 0;
         customSplineAnimator.resetPosition();
         passengerSpawner.passengerReset();
     }
@@ -45,7 +53,9 @@ public class StateController : MonoBehaviour
         if (isActive && isStarted)
         {
             elapsedTime += Time.deltaTime;
+            elapsedLapTime += Time.deltaTime;
         }
+        potentialPassengerLapScore = referenceLapTime - elapsedLapTime;
     }
 
     [ContextMenu("Add Lap")]
@@ -54,6 +64,8 @@ public class StateController : MonoBehaviour
         if (isActive && isStarted)
         {
             elapsedLaps += 1;
+            elapsedLapTime = 0f;
+            currentScore += potentialPassengerLapScore * livePassengers;
         }
     }
 
@@ -69,6 +81,12 @@ public class StateController : MonoBehaviour
                       $"Elapsed Time: {elapsedTime:F1}\n" +
                       $"Elapsed Laps: {elapsedLaps}";
 
+        Rect score_rect = new Rect(800, guiOffsetY, guiWidth, guiHeight);
+        string score_info = $"Current Score: {currentScore:F0}\n" +
+                      $"Elapsed LapTime: {elapsedLapTime:F1}\n" +
+                      $"P. Lap: {potentialPassengerLapScore:F0} x {livePassengers} = {potentialPassengerLapScore * livePassengers:F1}";
+
         GUI.Box(rect, info, boxStyle);
+        GUI.Box(score_rect, score_info, boxStyle);
     }
 }

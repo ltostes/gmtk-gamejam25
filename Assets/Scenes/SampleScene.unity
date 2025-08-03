@@ -751,7 +751,7 @@ AudioListener:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
-  m_Enabled: 1
+  m_Enabled: 0
 --- !u!20 &963194227
 Camera:
   m_ObjectHideFlags: 0
@@ -951,7 +951,7 @@ MonoBehaviour:
   splineContainer: {fileID: 917255316}
   wrapMode: 1
   alignToSpline: 1
-  initialPosition: 0.035
+  initialPosition: 0.06
   initialSpeed: 0
   maxSpeed: 10
   normalizedPosition: 0.035
@@ -989,6 +989,7 @@ MonoBehaviour:
   _currentBraking: 0
   inputActions: {fileID: -944628639613478452, guid: 5f9e55b6266a1464381b7c79136ed8f0, type: 3}
   trackObjectManager: {fileID: 264987810}
+  stateController: {fileID: 1660559795}
 --- !u!54 &1406494627
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1132,6 +1133,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   customSplineAnimator: {fileID: 1406494626}
+  isActive: 0
+  isStarted: 0
+  livePassengers: 0
+  referenceLapTime: 60
+  guiOffsetY: 20
+  guiWidth: 200
+  guiHeight: 80
 --- !u!114 &1660559796
 MonoBehaviour:
   m_ObjectHideFlags: 0

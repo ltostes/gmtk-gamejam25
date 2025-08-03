@@ -150,6 +150,16 @@ public class CustomSplineAnimator : MonoBehaviour
 
         // Convert speed to normalized progress
         float progressDelta = (currentSpeed * Time.deltaTime) / splineLength;
+
+        // Check if its a new lap
+        if (normalizedPosition < initialPosition
+            && (normalizedPosition + progressDelta) >= initialPosition
+            && progressDelta > 0
+            && stateController.isStarted)
+        {
+            stateController.addLap();       
+        }
+
         normalizedPosition = Mathf.Repeat(normalizedPosition + progressDelta, 1f); // Repeat is for it to loop after finish
 
         // Get and apply position

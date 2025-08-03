@@ -83,4 +83,12 @@ public class PassengerSpawner : MonoBehaviour
     {
         return cartContainer.transform.GetComponentsInChildren<CharacterJoint>().Length;
     }
+
+    [ContextMenu("Kill a passenger")]
+    public void killAPassenger()
+    {
+        CharacterJoint[] joints = cartContainer.transform.GetComponentsInChildren<CharacterJoint>();
+        CharacterJoint firstJoint = joints[0];
+        firstJoint.breakForce = 1;
+    }
 }
