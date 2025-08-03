@@ -3,35 +3,60 @@ using UnityEngine;
 public class PassengerSpawner : MonoBehaviour
 {
     public GameObject passengerPrefab;
+    public GameObject cartPrefab;
     public Transform cartAnchor;
     public Vector3[] seatOffsets; // Set in Inspector
+
+    public float seatRandRange = 0.02f;
     
     void Start()
     {
-        Rigidbody cartRb = cartAnchor.GetComponent<Rigidbody>();
+        // Cart Anchor rb
+        Rigidbody cartAnchorRb = cartAnchor.GetComponent<Rigidbody>();
         
+        // Calculate cart position
+        Vector3 cartPosition = cartAnchor.TransformPoint(new Vector3(0,0,0));
+        Quaternion cartRotation = cartAnchor.rotation;
+
+        // Instantiate cart
+        GameObject cart = Instantiate(
+            cartPrefab,
+            cartPosition,
+            cartRotation
+        );
+
+        HingeJoint cartHJoint = cart.GetComponent<HingeJoint>();
+        cartHJoint.connectedBody = cartAnchorRb;
+
+        Rigidbody cartRb = cart.GetComponent<Rigidbody>();
+
         foreach (Vector3 offset in seatOffsets)
         {
             // Calculate seat position
             Vector3 seatPosition = cartAnchor.TransformPoint(offset);
             Quaternion seatRotation = cartAnchor.rotation;
-            
+
+            Vector3 seatPosition_WithRandom = seatPosition + new Vector3(Random.value * 2 * seatRandRange - seatRandRange, 0, 0);
+
             // Instantiate passenger
             GameObject passenger = Instantiate(
-                passengerPrefab, 
-                seatPosition, 
+                passengerPrefab,
+                seatPosition_WithRandom,
                 seatRotation
             );
-            
+
             // Get body reference
             Transform body = passenger.transform.GetChild(0);
-            
+            Transform head = passenger.transform.GetChild(1);
+
             // Configure FixedJoint
             FixedJoint joint = body.GetComponent<FixedJoint>();
             joint.connectedBody = cartRb;
-            
-            // Parent under cart for organization
-            // passenger.transform.SetParent(cartAnchor);
+
+            // Configure CharacterJoint
+            // CharacterJoint cJoint = head.GetComponent<CharacterJoint>();
+            // cJoint.breakForce = 100;
+
         }
     }
 }

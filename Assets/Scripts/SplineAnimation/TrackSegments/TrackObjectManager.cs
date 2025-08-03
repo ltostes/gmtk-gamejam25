@@ -6,12 +6,6 @@ public class TrackObjectManager : MonoBehaviour
 {
     public SplineContainer splineContainer;
     public TrackSegment[] trackSegments;
-    
-    private void OnValidate()
-    {
-        // Auto-sort segments by start position
-        System.Array.Sort(trackSegments, (a, b) => a.start.CompareTo(b.start));
-    }
 
     public TrackSegment GetActiveSegment(float normalizedPos)
     {
