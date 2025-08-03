@@ -98,6 +98,7 @@ public class CustomSplineAnimator : MonoBehaviour
         if (isAccelerating)
         {
             _currentAcceleration = accelerationForce;
+            stateController.isStarted = true;
         }
 
         if (isBraking)

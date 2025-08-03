@@ -10,22 +10,30 @@ public class StateController : MonoBehaviour
 
     [Header("State Variables")]
     public bool isActive;
+    public bool isStarted;
     public int livePassengers;
+
+    private float elapsedTime;
+    private int elapsedLaps;
 
     [Header("GUI Settings")]
     public float guiOffsetY = 20f;
     public float guiWidth = 200f;
-    public float guiHeight = 80f;
+    public float guiHeight = 100f;
 
     void Start()
     {
         passengerSpawner = GetComponent<PassengerSpawner>();
         isActive = true;
+        isStarted = false;
     }
 
     [ContextMenu("Reset State")]
     public void resetState()
     {
+        isStarted = false;
+        elapsedTime = 0f;
+        elapsedLaps = 0;
         customSplineAnimator.resetPosition();
         passengerSpawner.passengerReset();
     }
@@ -34,6 +42,19 @@ public class StateController : MonoBehaviour
     {
         livePassengers = passengerSpawner.getLivePassengers();
         isActive = livePassengers > 0;
+        if (isActive && isStarted)
+        {
+            elapsedTime += Time.deltaTime;
+        }
+    }
+
+    [ContextMenu("Add Lap")]
+    public void addLap()
+    {
+        if (isActive && isStarted)
+        {
+            elapsedLaps += 1;
+        }
     }
 
     void OnGUI()
@@ -44,7 +65,9 @@ public class StateController : MonoBehaviour
 
         Rect rect = new Rect(10, guiOffsetY, guiWidth, guiHeight);
         string info = $"Live Riders: {livePassengers:F0}\n" +
-                      $"Active: {isActive}";
+                      $"Active/Started: {isActive} / {isStarted}\n" +
+                      $"Elapsed Time: {elapsedTime:F1}\n" +
+                      $"Elapsed Laps: {elapsedLaps}";
 
         GUI.Box(rect, info, boxStyle);
     }
