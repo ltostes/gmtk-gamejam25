@@ -1,12 +1,15 @@
+using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 public class StateController : MonoBehaviour
 {
 
     [SerializeField] public CustomSplineAnimator customSplineAnimator;
 
-    private PassengerSpawner passengerSpawner;
+    private PassengerManager passengerManager;
 
     [Header("State Variables")]
     public bool isActive;
@@ -26,12 +29,20 @@ public class StateController : MonoBehaviour
     public float guiOffsetY = 20f;
     public float guiWidth = 200f;
     public float guiHeight = 100f;
+    [SerializeField] public GameObject startScreen;
+    [SerializeField] public GameObject finalScreen;
+    [SerializeField] public GameObject scoreCounterBox;
+    [SerializeField] public TextMeshProUGUI finalScoreText;
+    [SerializeField] public TextMeshProUGUI currentScoreText;
+    [SerializeField] public TextMeshProUGUI nextLapScorePerPassengerText;
+    [SerializeField] public TextMeshProUGUI passengerMultiplierText;
 
     void Start()
     {
-        passengerSpawner = GetComponent<PassengerSpawner>();
+        passengerManager = GetComponent<PassengerManager>();
         isActive = true;
         isStarted = false;
+        resetState();
     }
 
     [ContextMenu("Reset State")]
@@ -43,12 +54,28 @@ public class StateController : MonoBehaviour
         elapsedLaps = 0;
         currentScore = 0;
         customSplineAnimator.resetPosition();
-        passengerSpawner.passengerReset();
+        passengerManager.passengerReset();
     }
 
     void Update()
     {
-        livePassengers = passengerSpawner.getLivePassengers();
+        // Passenger dying sound
+        int newLivePassengers = passengerManager.getLivePassengers();
+        int deltaPassengers = livePassengers - newLivePassengers;
+
+        if (deltaPassengers == 1)
+        {
+            playPassengerDeathAudio();
+        }
+        else if (deltaPassengers > 1)
+        {
+            for (int i = 0; i < deltaPassengers; i++)
+            {
+                Invoke("playPassengerDeathAudio", i / 10f);
+            }
+        }
+
+        livePassengers = passengerManager.getLivePassengers();
         isActive = livePassengers > 0;
         if (isActive && isStarted)
         {
@@ -60,8 +87,10 @@ public class StateController : MonoBehaviour
         if (potentialPassengerLapScore < 0)
         {
             elapsedLapTime = 0f;
-            passengerSpawner.killAPassenger();
+            passengerManager.killAPassenger();
         }
+
+        UpdateGUI();
     }
 
     [ContextMenu("Add Lap")]
@@ -73,6 +102,29 @@ public class StateController : MonoBehaviour
             elapsedLapTime = 0f;
             currentScore += potentialPassengerLapScore * livePassengers;
         }
+    }
+
+    public void playPassengerDeathAudio()
+    {
+        SoundFXManager.instance.PlayRandomSoundFXClip(passengerManager.passengerDeathAudioClips, passengerManager.cartAnchor.transform, 1);
+    }
+
+    void UpdateGUI()
+    {
+        // Logo
+        startScreen.SetActive(isActive && (!isStarted));
+
+        // Final Screen Background
+        finalScreen.SetActive(!isActive);
+
+        // Score
+        finalScoreText.text = $"{currentScore:F0}";
+        currentScoreText.text = $"{currentScore:F0}";
+        nextLapScorePerPassengerText.text = $"{potentialPassengerLapScore:F0}";
+        passengerMultiplierText.text = $"{livePassengers:F0}";
+
+        scoreCounterBox.SetActive(isActive && isStarted);
+
     }
 
     void OnGUI()
@@ -92,7 +144,7 @@ public class StateController : MonoBehaviour
                       $"Elapsed LapTime: {elapsedLapTime:F1}\n" +
                       $"P. Lap: {potentialPassengerLapScore:F0} x {livePassengers} = {potentialPassengerLapScore * livePassengers:F1}";
 
-        GUI.Box(rect, info, boxStyle);
-        GUI.Box(score_rect, score_info, boxStyle);
+        // GUI.Box(rect, info, boxStyle);
+        // GUI.Box(score_rect, score_info, boxStyle);
     }
 }

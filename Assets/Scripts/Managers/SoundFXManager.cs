@@ -1,16 +1,47 @@
+using System.Collections;
+using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class SoundFXManager : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    public static SoundFXManager instance;
+
+    [SerializeField] private AudioSource soundFXObject;
+
+    private void Awake()
     {
-        
+        if (instance == null)
+        {
+            instance = this;
+        }
     }
 
-    // Update is called once per frame
-    void Update()
+    public void PlaySoundFXClip(AudioClip audioClip, Transform spawnTransform, float volume)
     {
-        
+        // Spawn in GameObject
+        AudioSource audioSource = Instantiate(soundFXObject, spawnTransform.position, Quaternion.identity);
+
+        // Assign the audioClip
+        audioSource.clip = audioClip;
+
+        // Assign Volume
+        audioSource.volume = volume;
+
+        // Play sound
+        audioSource.Play();
+
+        // Get length of sound FX clip
+        float clipLength = audioSource.clip.length;
+
+        // Destroy the clip after it is done playing
+        Destroy(audioSource.gameObject, clipLength);
+    }
+
+    public void PlayRandomSoundFXClip(AudioClip[] audioClips, Transform spawnTransform, float volume)
+    {
+        int rand = Random.Range(0, audioClips.Length);
+
+        PlaySoundFXClip(audioClips[rand], spawnTransform, volume);
     }
 }

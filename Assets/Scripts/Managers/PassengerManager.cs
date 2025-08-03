@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class PassengerSpawner : MonoBehaviour
+public class PassengerManager : MonoBehaviour
 {
     public GameObject passengerPrefab;
     public GameObject cartPrefab;
@@ -10,6 +10,8 @@ public class PassengerSpawner : MonoBehaviour
     private GameObject cartContainer;
 
     public float seatRandRange = 0.02f;
+
+    [SerializeField] public AudioClip[] passengerDeathAudioClips;
 
     void Start()
     {
