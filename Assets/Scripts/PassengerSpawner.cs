@@ -8,14 +8,31 @@ public class PassengerSpawner : MonoBehaviour
     public Vector3[] seatOffsets; // Set in Inspector
 
     public float seatRandRange = 0.02f;
-    
+
     void Start()
     {
+        passengerReset();
+    }
+
+    [ContextMenu("Reset Passengers")]
+    void passengerReset()
+    {
+        GameObject oldCartContainer = GameObject.Find("CartContainer");
+        if (oldCartContainer != null)
+        {
+            Destroy(oldCartContainer);
+        }
+
+        // Cart and passenger container
+        GameObject cartContainer = new GameObject();
+
+        cartContainer.name = "CartContainer";
+
         // Cart Anchor rb
         Rigidbody cartAnchorRb = cartAnchor.GetComponent<Rigidbody>();
-        
+
         // Calculate cart position
-        Vector3 cartPosition = cartAnchor.TransformPoint(new Vector3(0,0,0));
+        Vector3 cartPosition = cartAnchor.TransformPoint(new Vector3(0, 0, 0));
         Quaternion cartRotation = cartAnchor.rotation;
 
         // Instantiate cart
@@ -24,6 +41,8 @@ public class PassengerSpawner : MonoBehaviour
             cartPosition,
             cartRotation
         );
+
+        cart.transform.SetParent(cartContainer.transform);
 
         HingeJoint cartHJoint = cart.GetComponent<HingeJoint>();
         cartHJoint.connectedBody = cartAnchorRb;
@@ -53,9 +72,8 @@ public class PassengerSpawner : MonoBehaviour
             FixedJoint joint = body.GetComponent<FixedJoint>();
             joint.connectedBody = cartRb;
 
-            // Configure CharacterJoint
-            // CharacterJoint cJoint = head.GetComponent<CharacterJoint>();
-            // cJoint.breakForce = 100;
+            // Configure parent
+            passenger.transform.SetParent(cartContainer.transform);
 
         }
     }
