@@ -56,6 +56,12 @@ public class StateController : MonoBehaviour
             elapsedLapTime += Time.deltaTime;
         }
         potentialPassengerLapScore = referenceLapTime - elapsedLapTime;
+
+        if (potentialPassengerLapScore < 0)
+        {
+            elapsedLapTime = 0f;
+            passengerSpawner.killAPassenger();
+        }
     }
 
     [ContextMenu("Add Lap")]
