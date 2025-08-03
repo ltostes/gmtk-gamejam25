@@ -78,4 +78,9 @@ public class PassengerSpawner : MonoBehaviour
 
         }
     }
+
+    public int getLivePassengers()
+    {
+        return cartContainer.transform.GetComponentsInChildren<CharacterJoint>().Length;
+    }
 }

@@ -42,8 +42,9 @@ public class CustomSplineAnimator : MonoBehaviour
     private InputAction accelerateAction;
     private InputAction brakeAction;
 
-    [Header("Track Objects")]
+    [Header("Manager References")]
     public TrackObjectManager trackObjectManager;
+    public StateController stateController;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -91,8 +92,8 @@ public class CustomSplineAnimator : MonoBehaviour
         _currentBraking = 0f;
 
         // Read input using Input System
-        bool isAccelerating = accelerateAction != null && accelerateAction.ReadValue<float>() > 0.1f;
-        bool isBraking = brakeAction != null && brakeAction.ReadValue<float>() > 0.1f;
+        bool isAccelerating = accelerateAction != null && accelerateAction.ReadValue<float>() > 0.1f && stateController.isActive;
+        bool isBraking = brakeAction != null && brakeAction.ReadValue<float>() > 0.1f && stateController.isActive;
 
         if (isAccelerating)
         {
@@ -252,11 +253,3 @@ public class CustomSplineAnimator : MonoBehaviour
     }
 
 }
-
-public enum WrapMode
-{
-    Once,
-    Loop,
-    PingPong
-}
-
