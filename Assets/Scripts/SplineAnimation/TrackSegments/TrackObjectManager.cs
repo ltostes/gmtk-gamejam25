@@ -1,6 +1,6 @@
 using UnityEngine;
 using UnityEngine.Splines;
-using UnityEditor;
+// using UnityEditor;
 
 public class TrackObjectManager : MonoBehaviour
 {
@@ -49,7 +49,7 @@ public class TrackObjectManager : MonoBehaviour
             // Draw segment type label
             GUIStyle style = new GUIStyle();
             style.normal.textColor = segmentColor;
-            Handles.Label(Vector3.Lerp(startPos, endPos, 0.5f), segment.type.ToString(), style);
+            // Handles.Label(Vector3.Lerp(startPos, endPos, 0.5f), segment.type.ToString(), style);
         }
     }
 }

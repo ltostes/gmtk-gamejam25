@@ -1,6 +1,6 @@
 using UnityEngine;
 using UnityEngine.Splines;
-using UnityEditor;
+// using UnityEditor;
 using System;
 
 [RequireComponent(typeof(CustomSplineAnimator))]
@@ -143,16 +143,16 @@ public class SplinePhysicsMonitor : MonoBehaviour
 
         if (showCurvature)
         {
-            Handles.color = Color.magenta;
-            Handles.Label(transform.position, $"Curvature: {Curvature:F4}\nRadius: {(1f / Curvature):F1}m");
+            // Handles.color = Color.magenta;
+            // Handles.Label(transform.position, $"Curvature: {Curvature:F4}\nRadius: {(1f / Curvature):F1}m");
         }
 
         if (showAcceleration)
         {
-            GUI.color = CentripetalAcceleration > centripetalAccelThreshold
-                ? Color.red : Color.yellow;
-            Handles.Label(transform.position + Vector3.up * 0.5f,
-                $"Centripetal Accel: {CentripetalAcceleration:F1} m/s²\nVelocity: {Velocity.magnitude:F1}m/s");
+            // GUI.color = CentripetalAcceleration > centripetalAccelThreshold
+            //     ? Color.red : Color.yellow;
+            // Handles.Label(transform.position + Vector3.up * 0.5f,
+            //     $"Centripetal Accel: {CentripetalAcceleration:F1} m/s²\nVelocity: {Velocity.magnitude:F1}m/s");
         }
         
         // Centripetal force vector visualization
@@ -166,8 +166,8 @@ public class SplinePhysicsMonitor : MonoBehaviour
             Gizmos.DrawSphere(end, 0.1f * vectorScale);
             
             // Add force magnitude label
-            Handles.color = centripetalVectorColor;
-            Handles.Label(end, $"Centripetal: {CentripetalForceMagnitude:F1}N");
+            // Handles.color = centripetalVectorColor;
+            // Handles.Label(end, $"Centripetal: {CentripetalForceMagnitude:F1}N");
         }
     }
 }

@@ -24,6 +24,7 @@ public class StateController : MonoBehaviour
 
     [Header("Game Settings")]
     public int referenceLapTime = 60;
+    [SerializeField] public AudioClip[] lapAudioClips;
 
     [Header("GUI Settings")]
     public float guiOffsetY = 20f;
@@ -101,12 +102,18 @@ public class StateController : MonoBehaviour
             elapsedLaps += 1;
             elapsedLapTime = 0f;
             currentScore += potentialPassengerLapScore * livePassengers;
+            playLapCompletedAudio();
         }
     }
 
     public void playPassengerDeathAudio()
     {
         SoundFXManager.instance.PlayRandomSoundFXClip(passengerManager.passengerDeathAudioClips, passengerManager.cartAnchor.transform, 1);
+    }
+
+    public void playLapCompletedAudio()
+    {
+        SoundFXManager.instance.PlayRandomSoundFXClip(lapAudioClips, passengerManager.cartAnchor.transform, 1);
     }
 
     void UpdateGUI()
